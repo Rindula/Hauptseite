@@ -1,105 +1,96 @@
 <?php
-session_start();
 
-if (isset($_SESSION['failedLogin'])) {
-    if ($_SESSION['failedLogin'] >= 5) {
-        header('Location: locked.php');
+/**
+ * File: index.php.
+ * Author: Ulrich Block
+ * Date: 03.10.12
+ * Time: 17:09
+ * Contact: <ulrich.block@easy-wi.com>
+ *
+ * This file is part of Easy-WI.
+ *
+ * Easy-WI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Easy-WI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Easy-WI.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Diese Datei ist Teil von Easy-WI.
+ *
+ * Easy-WI ist Freie Software: Sie koennen es unter den Bedingungen
+ * der GNU General Public License, wie von der Free Software Foundation,
+ * Version 3 der Lizenz oder (nach Ihrer Wahl) jeder spaeteren
+ * veroeffentlichten Version, weiterverbreiten und/oder modifizieren.
+ *
+ * Easy-WI wird in der Hoffnung, dass es nuetzlich sein wird, aber
+ * OHNE JEDE GEWAEHELEISTUNG, bereitgestellt; sogar ohne die implizite
+ * Gewaehrleistung der MARKTFAEHIGKEIT oder EIGNUNG FUER EINEN BESTIMMTEN ZWECK.
+ * Siehe die GNU General Public License fuer weitere Details.
+ *
+ * Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+ * Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
+ */
+
+define('EASYWIDIR', dirname(__FILE__));
+
+//Automatic redirection to the install folder
+if (is_dir(EASYWIDIR . '/install')) {
+ echo '<meta http-equiv="refresh" content="0; URL=/install/">';
+}
+
+$main = 1;
+$page_include = 1;
+
+include(EASYWIDIR . '/stuff/methods/vorlage.php');
+include(EASYWIDIR . '/stuff/methods/class_validator.php');
+include(EASYWIDIR . '/stuff/methods/functions.php');
+include(EASYWIDIR . '/stuff/settings.php');
+include(EASYWIDIR . '/stuff/methods/class_page_settings.php');
+include(EASYWIDIR . '/stuff/cms/init_page.php');
+
+
+if (isset($page_active) and $page_active == 'Y') {
+
+    if (isset($throw404)) {
+        $template_file = 'page_404.tpl';
+    } else if (isset($what_to_be_included_array[$s]) and is_file(EASYWIDIR . '/stuff/cms/' . $what_to_be_included_array[$s])) {
+        include(EASYWIDIR . '/stuff/cms/' . $what_to_be_included_array[$s]);
+    } else if (isset($what_to_be_included_array[$s]) and is_file(EASYWIDIR . '/stuff/' . $what_to_be_included_array[$s])) {
+        include(EASYWIDIR . '/stuff/' . $what_to_be_included_array[$s]);
+    } else if (isset($what_to_be_included_array[$s]) and is_file(EASYWIDIR . '/' . $what_to_be_included_array[$s])) {
+        include(EASYWIDIR . '/' . $what_to_be_included_array[$s]);
+    } else if (isset($customFiles[$s])) {
+        include(EASYWIDIR . '/stuff/custom_modules/' . $customFiles[$s]);
+    } else if (isset($s) and !isset($what_to_be_included_array[$s])) {
+        $template_file = 'page_404.tpl';
+    } else {
+        $template_file = 'page_home.tpl';
     }
+
+    unset($dbConnect);
+
+    if (!isset($template_to_use) or !isset($template_to_use) ) {
+        $template_to_use = 'default';
+    }
+
+    if (!isset($template_file) or is_array($template_file)) {
+        $template_file = '';
+    } else if (is_object($template_file)) {
+        $template_file = (string) $template_file;
+    }
+
+    include(IncludeTemplate($template_to_use, 'page_header.tpl', 'cms'));
+    include(IncludeTemplate($template_to_use, (preg_match('/^(.*)\.tpl$/', $template_file)) ? $template_file : 'page_general.tpl', (isset($customModule)) ? 'custom_modules' : 'cms'));
+    include(IncludeTemplate($template_to_use, 'page_footer.tpl', 'cms'));
+
+} else {
+    redirect($page_data->pageurl . '/login.php');
 }
-
-if (!file_exists('verifyPanel.php')) {
-    header('Location: create.php');
-}
-?>
-
-<html>
-<head>
-<title>Admin Panel - Login</title>
-<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" type ="text/css" href="styles/global.css" />
-<link rel="stylesheet" type ="text/css" href="styles/dashboard.css" />
-
-<meta name="viewport" content="width=device-width, initial-scale: 1.0, user-scaleable=0" />
-<!-- Insert this line above script imports  -->
-<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
-
-<!-- normal script imports etc  -->
-<script src="scripts/jquery-1.12.3.min.js"></script>
-<script src="scripts/jquery.backstretch.js"></script>
-<!-- Insert this line after script imports -->
-<script>if (window.module) module = window.module;</script>
-
-<script>
-function startTime() {
-    var today = new Date();
-    var h = today.getHours();
-    var m = today.getMinutes();
-    var s = today.getSeconds();
-    h = checkTime(h);
-    m = checkTime(m);
-    s = checkTime(s);
-    document.getElementById('txt').innerHTML =
-    h + ":" + m + ":" + s;
-    var t = setTimeout(startTime, 500);
-}
-function checkTime(i) {
-    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-    return i;
-}
-</script>
-
-
-
-
-</head>
-<body>
-<meta name="viewport" content="width=device-width">
-<div id="background"></div>
-	<div id = "header">
-        <div class ="logo"><a href="#">Admin<span>Panel</span></a></div>
-		<div class ="logoE"><a href="#">By Rindula</a></div>
-	</div>
-<center><div id="txt"></div></center>
-<script>startTime();</script>
-<div id = "login">
-<form action="login.php" method="post">
-<div class="login-block">
-    <h1>Login</h1>
-    <input type="text" value="" placeholder="Username" id="username" name="username"/>
-    <input type="password" value="" placeholder="Password" id="password" name="password"/>
-<?php
-
-if (isset($_COOKIE['conecFail']) && $_COOKIE['conecFail'] == '1') {
-    echo'<div style="color:red"><center>Database connection failed!</center></div>';
-}
-
-if (isset($_COOKIE['fail']) && $_COOKIE['fail'] == '1') {
-    echo'<div style="color:red"><center>Username or password incorrect.</center></div>';
-}
-?>
-    <button>Submit</button>
-</div>
-
-</form>
-</div>
-
-	<script>
-        $.backstretch([
-		  "images/img4.jpg",
-          "images/img5.jpg",
-          "images/img7.jpg",
-		  "images/img1.jpg",
-          "images/img10.jpg",
-          "images/img9.jpg",
-		  "images/img3.jpg",
-		  "images/img4.jpg",
-		  "images/img6.jpg",
-		  "images/img8.jpg"
-        ], {
-            fade: 750,
-            duration: 4000
-        });
-    </script>
-
-</body>
-</html>
+$sql = null;
