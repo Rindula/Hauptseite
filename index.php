@@ -39,7 +39,7 @@
     <div class="image">
         <img src="img/preview.png" alt="">
         <a href="http://schule.rindula.de" title="Zum Schulbereich" style="top: 0; left: 0; width: 45%; height: 100%;"></a>
-        <a href="#" title="Zur Hauptseite - AKTUELL IN WARTUNG" style="top: 0; right: 0; width: 45%; height: 100%;"></a>
+        <a href="/main" title="Zur Hauptseite" style="top: 0; right: 0; width: 45%; height: 100%;"></a>
     </div>
 </body>
 </html>
