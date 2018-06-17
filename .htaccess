@@ -1,4 +1,2 @@
 RewriteEngine On
-RewriteCond %{SCRIPT_FILENAME} !-d
-RewriteRule ^([^.]+)$ .php [NC,L]
-RewriteRule ^request-support/(.*) /support/ [R=301,L]
+RewriteRule ^/?(.*).(php|html|htm)$ /$1 [R=301,L]
