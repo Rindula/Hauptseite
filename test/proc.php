@@ -7,6 +7,6 @@ $m = explode(",", $m);
 $r = explode(",", $r);
 
 for ($i=0; $i < count($m); $i++) { 
-    $out[] = ($m[i] - $r[i]);
+    $out[] = ((float)$m[i] - (float)$r[i]);
 }
 echo join(",", $out);
