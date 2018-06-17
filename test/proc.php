@@ -3,12 +3,10 @@
 $m = $_GET["m"];
 $r = $_GET["r"];
 
-$m = explode(",", $m);
-$r = explode(",", $r);
+$ma = explode(",", $m);
+$ra = explode(",", $r);
 
-for ($i=0; $i < count($m); $i++) { 
-    $out[] = ((float)$m[i] - (float)$r[i]);
-    echo $m[i];
-    echo $r[i];
+for ($i=0; $i < count($ma); $i++) { 
+    $out[] = ($ma[i] - $ra[i]);
 }
 echo join(",", $out);
