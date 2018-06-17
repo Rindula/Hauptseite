@@ -8,6 +8,6 @@ $r = explode(",", $r);
 
 
 for ($i=0; $i < count($m); $i++) { 
-    $out[] = round(((float)$m[$i] - (float)$r[$i]), 2);
+    $out[] = round(((float)$r[$i] - (float)$m[$i]), 2);
 }
 echo join(",", $out);
