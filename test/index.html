@@ -14,7 +14,7 @@
             }
             var m = document.getElementById("coordmain").value;
             var r = document.getElementById("coordrel").value;
-            xhr.open('GET', 'proc.php?m=' + m + "&r=" + r, true);
+            xhr.open('GET', encodeURI('proc.php?m=' + m + "&r=" + r), true);
             xhr.send(null);
         }
         </script>
